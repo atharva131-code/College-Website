@@ -1,0 +1,23 @@
+
+✅ "Order Confirmed"     → 200 (success)
+✅ "Order Created"       → 201 (created)
+❌ "Wrong Address"       → 400 (your mistake)
+❌ "Not Logged In"       → 401 (unauthorized)
+❌ "Page Not Found"      → 404 (not found)
+❌ "Restaurant Down"     → 500 (server mistake)
+ 
+ server/
+├── config/
+├── models/
+│   ├── User.js        
+│   ├── OTP.js         
+│   ├── Announcement.js
+│   ├── Event.js       
+│   └── Course.js      
+├── routes/
+│   └── auth.js        
+├── middleware/
+│   └── auth.js        
+├── .env               
+├── .gitignore         
+└── index.js           
