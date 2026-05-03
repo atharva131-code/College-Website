@@ -26,11 +26,12 @@ const app = express()
 const httpServer = createServer(app)
 
 // Create Socket.IO server
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: '*',
     methods: ['GET', 'POST'],
-    credentials: true,
+    credentials: false,
   },
 })
 
@@ -41,7 +42,9 @@ app.use(helmet({
 
 // CORS
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: function(origin, callback) {
+    callback(null, true) // allow all origins
+  },
   credentials: true,
 }))
 
