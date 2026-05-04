@@ -7,30 +7,38 @@ import OTP from '../models/OTP.js';
 
 const router = express.Router();
 
-//Send OTP email
 const sendOTPEmail = async (email, otp) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,          // ← true for port 465
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
-  });
+    tls: {
+      rejectUnauthorized: false,  // ← fixes SSL issues on cloud servers
+    },
+  })
+
+  // Verify connection before sending
+  await transporter.verify()
 
   await transporter.sendMail({
-    from: `"College Website" <${process.env.EMAIL_USER}>`,
+    from: `"Atharva College" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: 'Your OTP Code',
+    subject: 'Your OTP Code — Atharva College',
     html: `
-      <h2>Your OTP Code</h2>
-      <p>Use this OTP to verify your account:</p>
-      <h1 style="color: #4F46E5; letter-spacing: 8px;">${otp}</h1>
-      <p>This OTP expires in <b>10 minutes</b>.</p>
-      <p>If you did not request this, ignore this email.</p>
+      <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <h2 style="color: #1d4ed8;">🎓 City College</h2>
+        <p>Your OTP code for verification is:</p>
+        <h1 style="color: #1d4ed8; letter-spacing: 10px; font-size: 36px;">${otp}</h1>
+        <p>This OTP expires in <b>10 minutes</b>.</p>
+        <p style="color: #999; font-size: 12px;">If you did not request this, ignore this email.</p>
+      </div>
     `,
-  });
-};
-
+  })
+}
 //Generate and save OTP
 
 const generateAndSaveOTP = async (email) => {
