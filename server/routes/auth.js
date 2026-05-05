@@ -8,41 +8,41 @@ import OTP from '../models/OTP.js'
 const router = express.Router()
 
 // Send OTP email
-const sendOTPEmail = async (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  })
+// const sendOTPEmail = async (email, otp) => {
+//   const transporter = nodemailer.createTransport({
+//     host: 'smtp.gmail.com',
+//     port: 465,
+//     secure: true,
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS,
+//     },
+//     tls: {
+//       rejectUnauthorized: false,
+//     },
+//   })
 
-  await transporter.sendMail({
-    from: `"City College" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Your OTP Code',
-    html: `
-      <h2>Your OTP Code</h2>
-      <p>Use this OTP to verify your account:</p>
-      <h1 style="color: #4F46E5; letter-spacing: 8px;">${otp}</h1>
-      <p>This OTP expires in <b>10 minutes</b>.</p>
-    `,
-  })
-}
+//   await transporter.sendMail({
+//     from: `"Atharva College" <${process.env.EMAIL_USER}>`,
+//     to: email,
+//     subject: 'Your OTP Code',
+//     html: `
+//       <h2>Your OTP Code</h2>
+//       <p>Use this OTP to verify your account:</p>
+//       <h1 style="color: #4F46E5; letter-spacing: 8px;">${otp}</h1>
+//       <p>This OTP expires in <b>10 minutes</b>.</p>
+//     `,
+//   })
+// }
 
-// Generate and save OTP
-const generateAndSaveOTP = async (email) => {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString()
-  const hashedOTP = await bcrypt.hash(otp, 10)
-  await OTP.deleteMany({ email })
-  await OTP.create({ email, otp: hashedOTP })
-  return otp
-}
+// // Generate and save OTP
+// const generateAndSaveOTP = async (email) => {
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString()
+//   const hashedOTP = await bcrypt.hash(otp, 10)
+//   await OTP.deleteMany({ email })
+//   await OTP.create({ email, otp: hashedOTP })
+//   return otp
+// }
 
 // ROUTE 1 — Register
 router.post('/register', async (req, res) => {
@@ -79,28 +79,28 @@ router.post('/register', async (req, res) => {
 })
 
 // ROUTE 2 — Verify OTP
-router.post('/verify-otp', async (req, res) => {
-  try {
-    const { email, otp } = req.body
+// router.post('/verify-otp', async (req, res) => {
+//   try {
+//     const { email, otp } = req.body
 
-    const otpRecord = await OTP.findOne({ email })
-    if (!otpRecord) {
-      return res.status(400).json({ message: 'OTP expired or not found.' })
-    }
+//     const otpRecord = await OTP.findOne({ email })
+//     if (!otpRecord) {
+//       return res.status(400).json({ message: 'OTP expired or not found.' })
+//     }
 
-    const isMatch = await bcrypt.compare(otp, otpRecord.otp)
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Wrong OTP. Please try again.' })
-    }
+//     const isMatch = await bcrypt.compare(otp, otpRecord.otp)
+//     if (!isMatch) {
+//       return res.status(400).json({ message: 'Wrong OTP. Please try again.' })
+//     }
 
-    await User.findOneAndUpdate({ email }, { isVerified: true })
-    await OTP.deleteMany({ email })
+//     await User.findOneAndUpdate({ email }, { isVerified: true })
+//     await OTP.deleteMany({ email })
 
-    res.status(200).json({ message: 'Email verified successfully! You can now login.' })
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message })
-  }
-})
+//     res.status(200).json({ message: 'Email verified successfully! You can now login.' })
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error', error: error.message })
+//   }
+// })
 
 // ROUTE 3 — Login
 router.post('/login', async (req, res) => {
