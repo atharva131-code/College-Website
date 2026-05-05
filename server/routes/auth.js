@@ -63,23 +63,19 @@ const generateAndSaveOTP = async (email) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, department, rollNumber } = req.body;
+    const { name, email, password, role, department, rollNumber } = req.body
 
-    
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email and password are required' });
+      return res.status(400).json({ message: 'Name, email and password are required' })
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email })
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already registered' });
+      return res.status(400).json({ message: 'Email already registered' })
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Save user but keep isVerified false until OTP verified
     await User.create({
       name,
       email,
@@ -87,8 +83,16 @@ router.post('/register', async (req, res) => {
       role: role || 'student',
       department: department || '',
       rollNumber: rollNumber || '',
-      isVerified: false,
-    });
+      isVerified: true,  // ← Auto verify — skip OTP for now
+    })
+
+    res.status(201).json({
+      message: 'Registration successful! You can now login.',
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+})
 
     // Generate OTP and send email
     const otp = await generateAndSaveOTP(email);

@@ -27,34 +27,33 @@ export default function Register() {
 
   // Step 1 — Submit registration form
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setError('')
+  e.preventDefault()
+  setError('')
 
-    if (form.password !== form.confirmPassword) {
-      return setError('Passwords do not match')
-    }
-    if (form.password.length < 6) {
-      return setError('Password must be at least 6 characters')
-    }
-
-    setLoading(true)
-    try {
-      await API.post('/auth/register', {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        role: form.role,
-        department: form.department,
-        rollNumber: form.rollNumber,
-      })
-      setStep(2)
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed')
-    } finally {
-      setLoading(false)
-    }
+  if (form.password !== form.confirmPassword) {
+    return setError('Passwords do not match')
+  }
+  if (form.password.length < 6) {
+    return setError('Password must be at least 6 characters')
   }
 
+  setLoading(true)
+  try {
+    await API.post('/auth/register', {
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      role: form.role,
+      department: form.department,
+      rollNumber: form.rollNumber,
+    })
+    setStep(3) // ← Skip OTP step, go straight to success
+  } catch (err) {
+    setError(err.response?.data?.message || 'Registration failed')
+  } finally {
+    setLoading(false)
+  }
+}
   // Step 2 — Verify OTP
   const handleVerifyOTP = async (e) => {
     e.preventDefault()
